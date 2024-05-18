@@ -9,9 +9,9 @@ import (
 	"net/http"
 )
 
-func (h *Handlers) GetAllOrderDitails(c *gin.Context) {
-	orderDitails := []models.OrderDetail{}
-	if err := h.DB.Find(&orderDitails).Error; err != nil {
+func (h *Handlers) GetAllOrderDetails(c *gin.Context) {
+	orderDetails := []models.OrderDetail{}
+	if err := h.DB.Find(&orderDetails).Error; err != nil {
 		log.Println("Error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal server error",
@@ -19,7 +19,7 @@ func (h *Handlers) GetAllOrderDitails(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"orderDitails": orderDitails,
+		"orderDetails": orderDetails,
 	})
 }
 

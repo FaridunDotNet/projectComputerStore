@@ -30,11 +30,12 @@ func main() {
 
 	if err = db.AutoMigrate(
 		&models.Admin{},
-		&models.Course{},
-		&models.Student{},
-		&models.Teacher{},
-		&models.Group{},
-		&models.Lesson{},
+		&models.Product{},
+		&models.Order{},
+		&models.Category{},
+		&models.Customer{},
+		&models.Review{},
+		&models.OrderDetail{},
 	); err != nil {
 		log.Fatal("cannot migrate: ", err.Error())
 	}
@@ -54,41 +55,61 @@ func main() {
 		admins.DELETE("/:id", h.DeleteAdmin)
 	}
 
-	teachers := router.Group("/teachers")
+	categories := router.Group("/categories")
 	{
-		teachers.GET("/", h.GetAllCategories)
-		teachers.POST("/", h.CreateCategory)
-		teachers.GET("/:id", h.GetOneCategory)
-		teachers.PUT("/:id", h.UpdateCategory)
-		teachers.DELETE("/:id", h.DeleteCategory)
+		categories.GET("/", h.GetAllCategories)
+		categories.POST("/", h.CreateCategory)
+		categories.GET("/:id", h.GetOneCategory)
+		categories.PUT("/:id", h.UpdateCategory)
+		categories.DELETE("/:id", h.DeleteCategory)
 	}
 
-	courses := router.Group("/courses")
+	products := router.Group("/products")
 	{
-		courses.GET("/", h.GetAllProducts)
-		courses.POST("/", h.CreateProduct)
-		courses.GET("/:id", h.GetOneProduct)
-		courses.PUT("/:id", h.UpdateProduct)
-		courses.DELETE("/:id", h.DeleteProduct)
+		products.GET("/", h.GetAllProducts)
+		products.POST("/", h.CreateProduct)
+		products.GET("/:id", h.GetOneProduct)
+		products.PUT("/:id", h.UpdateProduct)
+		products.DELETE("/:id", h.DeleteProduct)
 	}
 
-	lessons := router.Group("/lessons")
+	customers := router.Group("/customers")
 	{
 
-		lessons.GET("/", h.GetAllLessons)
-		lessons.POST("/", h.CreateLesson)
-		lessons.GET("/:id", h.GetOneLesson)
-		lessons.PUT("/:id", h.UpdateLesson)
-		lessons.DELETE("/:id", h.DeleteLesson)
+		customers.GET("/", h.GetAllCustomers)
+		customers.POST("/", h.CreateCustomer)
+		customers.GET("/:id", h.GetOneCustomer)
+		customers.PUT("/:id", h.UpdateCustomer)
+		customers.DELETE("/:id", h.DeleteCustomer)
 	}
 
-	students := router.Group("/students")
+	orders := router.Group("/orders")
 	{
-		students.GET("/", h.GetAllStudents)
-		students.POST("/", h.CreateStudent)
-		students.GET("/:id", h.GetOneStudent)
-		students.PUT("/:id", h.UpdateStudent)
-		students.DELETE("/:id", h.DeleteStudent)
+		orders.GET("/", h.GetAllOrders)
+		orders.POST("/", h.CreateOrder)
+		orders.GET("/:id", h.GetOneOrder)
+		orders.PUT("/:id", h.UpdateOrder)
+		orders.DELETE("/:id", h.DeleteOrder)
 	}
+
+	ordersDetails := router.Group("/order_details")
+	{
+		ordersDetails.GET("/", h.GetAllOrderDetails)
+		ordersDetails.POST("/", h.CreateOrderDetail)
+		ordersDetails.GET("/:id", h.GetOneOrderDetail)
+		ordersDetails.PUT("/:id", h.UpdateOrderDetail)
+		ordersDetails.DELETE("/:id", h.DeleteOrderDetail)
+	}
+
+	reviews := router.Group("/order_details")
+	{
+		reviews.GET("/", h.GetAllReviews)
+		reviews.POST("/", h.CreateReview)
+		reviews.GET("/:id", h.GetOneReview)
+		reviews.PUT("/:id", h.UpdateReview)
+		reviews.DELETE("/:id", h.DeleteReview)
+		reviews.GET("/id", h.GetProductWithReviews)
+	}
+
 	router.Run(":4000")
 }

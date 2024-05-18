@@ -41,16 +41,16 @@ func main() {
 		log.Fatal("cannot open gorm connection:", err.Error())
 	}
 
-	err = db.AutoMigrate(
+	if err = db.AutoMigrate(
 		&models.Admin{},
-		&models.Teacher{},
-		&models.Course{},
-		&models.Group{},
-		&models.Student{},
-		&models.Lesson{},
-	)
-	if err != nil {
-		log.Fatal("cannot auto-migrate the DB:", err.Error())
+		&models.Product{},
+		&models.Order{},
+		&models.Category{},
+		&models.Customer{},
+		&models.Review{},
+		&models.OrderDetail{},
+	); err != nil {
+		log.Fatal("cannot migrate: ", err.Error())
 	}
 
 	fmt.Println("All good")
