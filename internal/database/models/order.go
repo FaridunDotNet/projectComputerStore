@@ -1,17 +1,15 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type Order struct {
-	gorm.Model
-	CustomerID  uint      `json:"customer_id" binding:"required"`
-	OrderDate   string    `json:"order_date" binding:"required"`
-	TotalAmount float64   `json:"total_amount" binding:"required"`
-	CreatedAt   time.Time `gorm:"default:now()"`
-	UpdatedAt   time.Time `gorm:"default:now()"`
-
-	OrderDetail []OrderDetail `json:"orderDetails" gorm:"foreignKey:OrderID"`
+	ID          uint          `json:"id" gorm:"primaryKey" fake:"-"`
+	CustomerID  uint          `json:"customer_id" binding:"required" fake:"-"`
+	OrderData   string        `json:"order_data" binding:"required" fake:"{sentence}"`
+	TotalAmount float64       `json:"total_amount" binding:"required" fake:"{100-100000}"`
+	CreatedAt   time.Time     `json:"created_at" gorm:"autoCreateTime" fake:"-"`
+	UpdatedAt   time.Time     `json:"updated_at" gorm:"autoUpdateTime" fake:"-"`
+	OrderDetail []OrderDetail `json:"order_details" gorm:"foreignKey:OrderID" fake:"-"`
 }

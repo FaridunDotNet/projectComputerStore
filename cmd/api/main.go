@@ -1,50 +1,35 @@
 package main
 
 import (
-	"apiAcademy/internal/database/models"
+	"apiAcademy/internal/database"
 	"apiAcademy/internal/handlers"
-	"fmt"
+	"apiAcademy/internal/helpers"
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"log"
-)
-
-const (
-	DBHost     = "localhost" // 127.0.0.1
-	DBPort     = 5432
-	DBUser     = "postgres"
-	DBPassword = "qwerty"
-	DBName     = "academy_db"
+	"log/slog"
+	"os"
 )
 
 func main() {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Dushanbe", DBHost, DBPort, DBUser, DBPassword, DBName)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	db, err := database.GormConnect()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("cannot connect to DB via gorm", "err", err.Error())
+		return
 	}
-	fmt.Println("Successfully connected")
 
-	//h := handler{DB: db}
-
-	if err = db.AutoMigrate(
-		&models.Admin{},
-		&models.Product{},
-		&models.Order{},
-		&models.Category{},
-		&models.Customer{},
-		&models.Review{},
-		&models.OrderDetail{},
-	); err != nil {
-		log.Fatal("cannot migrate: ", err.Error())
+	if err := database.GormAutoMigrate(db); err != nil {
+		logger.Error("cannot automigrate models", "err", err.Error())
+		return
 	}
 
 	h := handlers.Handlers{
 		DB: db,
 	}
 
-	router := gin.Default()
+	helpers.SetValidatorEngineToUseJSONTags()
+
+	router := gin.Default() //Для восстанавления из паники
 
 	admins := router.Group("/admins")
 	{
@@ -71,6 +56,7 @@ func main() {
 		products.GET("/:id", h.GetOneProduct)
 		products.PUT("/:id", h.UpdateProduct)
 		products.DELETE("/:id", h.DeleteProduct)
+
 	}
 
 	customers := router.Group("/customers")
@@ -101,14 +87,13 @@ func main() {
 		ordersDetails.DELETE("/:id", h.DeleteOrderDetail)
 	}
 
-	reviews := router.Group("/order_details")
+	reviews := router.Group("/reviews")
 	{
 		reviews.GET("/", h.GetAllReviews)
 		reviews.POST("/", h.CreateReview)
 		reviews.GET("/:id", h.GetOneReview)
 		reviews.PUT("/:id", h.UpdateReview)
 		reviews.DELETE("/:id", h.DeleteReview)
-		reviews.GET("/id", h.GetProductWithReviews)
 	}
 
 	router.Run(":4000")

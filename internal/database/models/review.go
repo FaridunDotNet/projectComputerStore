@@ -1,18 +1,17 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type Review struct {
-	gorm.Model
-	ProductID  uint      `json:"product_id" binding:"required"`
-	Product    Product   `json:"product"`
+	ID         uint      `json:"id" gorm:"primaryKey" fake:"-"`
+	ProductID  uint      `json:"product_id" binding:"required" fake:"-"`
+	Product    Product   `json:"product" gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" fake:"-"`
 	CustomerID uint      `json:"customer_id" binding:"required"`
-	Customer   Customer  `json:"customer"`
-	Rating     int       `json:"rating" binding:"required,gte=1,lte=10"`
-	Comment    string    `json:"comment"`
-	CreatedAt  time.Time `gorm:"default:now()"`
-	UpdatedAt  time.Time `gorm:"default:now()"`
+	Customer   Customer  `json:"customer" gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" fake:"-"`
+	Rating     int       `json:"rating" binding:"required" fake:"{number:1-10}"`
+	Comment    string    `json:"comment" fake:"{comment}"`
+	CreatedAt  time.Time `json:"created_at" gorm:"autoCreateTime" fake:"-"`
+	UpdatedAt  time.Time `json:"updated_at" gorm:"autoUpdateTime" fake:"-"`
 }

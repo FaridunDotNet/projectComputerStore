@@ -1,57 +1,70 @@
 package main
 
 import (
+	"apiAcademy/internal/database"
 	"apiAcademy/internal/database/models"
+	"apiAcademy/internal/database/seeder"
 	"fmt"
-	_ "github.com/lib/pq"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"log"
-)
-
-const (
-	host     = "localhost" // 127.0.0.1
-	port     = "5432"
-	user     = "postgres"
-	password = "postgres"
-	dbname   = "academy_db"
+	"log/slog"
+	"os"
 )
 
 func main() {
-	// 1. Self written SQL method:
-	//db, err := database.UsualConnect(host, port, user, password, dbname)
-	//if err != nil {
-	//	log.Fatal("cannot connect to DB:", err.Error())
-	//}
-	//defer db.Close()
+	fmt.Println("Academy API Seeder\n")
+	fmt.Println("Connecting to DB...")
 
-	//examples.Example1(db)
-	//examples.Example2SqlInjection(db)
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	//examples.StaticQuery(db)
-	//examples.DynamicQuery(db)
-	//examples.DynamicQueryPrepared(db)
-	//examples.DynamicQueryPreparedUsingStruct(db)
-
-	// 2. ORM connection method:
-	// DSN - data source name
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := database.GormConnect()
 	if err != nil {
-		log.Fatal("cannot open gorm connection:", err.Error())
+		logger.Error("cannot connect to DB via gorm", "err", err.Error())
+		return
 	}
 
-	if err = db.AutoMigrate(
-		&models.Admin{},
-		&models.Product{},
-		&models.Order{},
-		&models.Category{},
-		&models.Customer{},
-		&models.Review{},
-		&models.OrderDetail{},
-	); err != nil {
-		log.Fatal("cannot migrate: ", err.Error())
+	db.Migrator().DropTable(&models.Customer{})
+	db.Migrator().DropTable(&models.Product{})
+	db.Migrator().DropTable(&models.Order{})
+	db.Migrator().DropTable(&models.OrderDetail{})
+	db.Migrator().DropTable(&models.Category{})
+	db.Migrator().DropTable(&models.Review{})
+	db.Migrator().DropTable(&models.Admin{})
+
+	if err := database.GormAutoMigrate(db); err != nil {
+		logger.Error("cannot automigrate models", "err", err.Error())
+		return
 	}
 
-	fmt.Println("All good")
+	// Admins
+	if err := seeder.SeedAdmins(db, 10); err != nil {
+		logger.Error("cannot seed admins", "err", err.Error())
+	}
+
+	// Teachers
+	if err := seeder.SeedCustomers(db, 10); err != nil {
+		logger.Error("cannot seed customers", "err", err.Error())
+	}
+
+	// Courses
+	if err := seeder.SeedCategories(db, 10); err != nil {
+		logger.Error("cannot seed categories", "err", err.Error())
+	}
+
+	// Groups
+	if err := seeder.SeedProducts(db, 10); err != nil {
+		logger.Error("cannot seed products", "err", err.Error())
+	}
+
+	// Students
+	if err := seeder.SeedOrders(db, 100); err != nil {
+		logger.Error("cannot seed orders", "err", err.Error())
+	}
+
+	// Lessons
+	if err := seeder.SeedOrdersDetails(db, 10); err != nil {
+		logger.Error("cannot seed details", "err", err.Error())
+	}
+
+	if err := seeder.SeedReview(db, 10); err != nil {
+		logger.Error("cannot seed reviews", "err", err.Error())
+	}
 }

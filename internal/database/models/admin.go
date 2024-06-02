@@ -1,16 +1,14 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type Admin struct {
-	gorm.Model
-	ID        int       `json:"id" gorm:"primaryKey"`
-	FullName  string    `json:"fullName" gorm:"not null"`
-	Email     string    `json:"email" gorm:"not null;unique"`
-	Password  string    `json:"password" gorm:"not null"`
-	CreatedAt time.Time `json:"createdAt" gorm:"default:now()"`
-	UpdatedAt time.Time `json:"updatedAt" gorm:"default:now()"`
+	ID        int       `json:"id" gorm:"primaryKey" fake:"-"`
+	FullName  string    `json:"fullName" gorm:"not null" fake:"{name}"`
+	Email     string    `json:"email" gorm:"not null;unique" fake:"{email}"`
+	Password  string    `json:"password" gorm:"not null" fake:"{password}"`
+	CreatedAt time.Time `json:"createdAt" gorm:"default:now()" fake:"-"`
+	UpdatedAt time.Time `json:"updatedAt" gorm:"default:now()" fake:"-"`
 }

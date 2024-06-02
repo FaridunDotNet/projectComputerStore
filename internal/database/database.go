@@ -1,22 +1,38 @@
 package database
 
 import (
-	"database/sql"
+	"apiAcademy/internal/database/models"
 	"fmt"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func UsualConnect(host, port, user, password, dbname string) (*sql.DB, error) {
-	// DSN - data source name
-	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
+const (
+	DBHost     = "localhost" // 127.0.0.1
+	DBPort     = 5432
+	DBUser     = "postgres"
+	DBPassword = "qwerty"
+	DBName     = "academy_db"
+)
+
+func GormConnect() (*gorm.DB, error) {
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Dushanbe", DBHost, DBPort, DBUser, DBPassword, DBName)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
+	return db, nil
+}
 
-	return db, err
+func GormAutoMigrate(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&models.Admin{},
+		&models.Category{},
+		&models.Customer{},
+		&models.Order{},
+		&models.Product{},
+		&models.OrderDetail{},
+		&models.Review{},
+	)
 }

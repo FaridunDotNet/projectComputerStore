@@ -1,15 +1,14 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type Category struct {
-	gorm.Model
-	Name      string    `json:"name" binding:"required"`
-	CreatedAt time.Time `gorm:"default:now()"`
-	UpdatedAt time.Time `gorm:"default:now()"`
+	ID        int       `json:"id" gorm:"primaryKey" fake:"-"`
+	Name      string    `json:"name" binding:"required" fake:"{name}"`
+	CreatedAt time.Time `gorm:"default:now()" fake:"-"`
+	UpdatedAt time.Time `gorm:"default:now()" fake:"-"`
 
-	Product []Product `json:"products" gorm:"foreignKey:CategoryID"`
+	Product []Product `json:"products" gorm:"foreignKey:CategoryID" fake:"-"`
 }

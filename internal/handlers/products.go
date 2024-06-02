@@ -49,7 +49,7 @@ func (h *Handlers) GetOneProduct(c *gin.Context) {
 	id := c.Param("id")
 	var product models.Product
 
-	if err := h.DB.First(&product, id).Error; err != nil {
+	if err := h.DB.Preload("Reviews").First(&product, id).Error; err != nil {
 		log.Println("Error:", err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{

@@ -1,18 +1,17 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type OrderDetail struct {
-	gorm.Model
-	OrderID         uint      `json:"order_id" binding:"required"`
-	Order           Order     `json:"order"`
-	ProductID       uint      `json:"product_id" binding:"required"`
-	Product         Product   `json:"product"`
-	QuantityOrdered int       `json:"quantity_ordered" binding:"required"`
-	UnitPrice       float64   `json:"unit_price" binding:"required"`
-	CreatedAt       time.Time `gorm:"default:now()"`
-	UpdatedAt       time.Time `gorm:"default:now()"`
+	ID              uint      `json:"id" gorm:"primaryKey" fake:"-"`
+	OrderID         uint      `json:"order_id" binding:"required" fake:"-"`
+	Order           Order     `json:"order" gorm:"foreignKey:OrderID;references:ID" fake:"-"`
+	ProductID       uint      `json:"product_id" binding:"required" fake:"-"`
+	Product         Product   `json:"product" gorm:"foreignKey:ProductID;references:ID" fake:"-"`
+	QuantityOrdered int       `json:"quantity_ordered" binding:"required" fake:"-"`
+	UnitPrice       float64   `json:"unit_price" binding:"required" fake:"number: 50.0-10000.0"`
+	CreatedAt       time.Time `json:"created_at" gorm:"autoCreateTime" fake:"-"`
+	UpdatedAt       time.Time `json:"updated_at" gorm:"autoUpdateTime" fake:"-"`
 }

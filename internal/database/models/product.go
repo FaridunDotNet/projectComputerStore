@@ -1,22 +1,19 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type Product struct {
-	gorm.Model
-	Name              string    `json:"name" binding:"required"`
-	Description       string    `json:"description"`
-	Price             float64   `json:"price" binding:"required"`
-	QuantityAvailable int       `json:"quantity_available" binding:"required"`
-	CategoryID        uint      `json:"category_id" binding:"required"`
-	CreatedAt         time.Time `gorm:"default:now()"`
-	UpdatedAt         time.Time `gorm:"default:now()"`
-
-	Category    Category      `json:"category"`
-	OrderDetail []OrderDetail `json:"orderDetail" gorm:"foreignKey:ProductID"`
-	Review      []Review      `json:"reviews" gorm:"foreignKey:ProductID"`
-	// course has many groups
+	ID                uint          `json:"id" gorm:"primaryKey" fake:"-"`
+	Name              string        `json:"name" binding:"required" fake:"{name}"`
+	Description       string        `json:"description" binding:"required" fake:"{sentence}"`
+	Price             float64       `json:"price" binding:"required" fake:"{number:1-10000}"`
+	QuantityAvailable int           `json:"quantity_available" binding:"required" fake:"{number:10-100}"`
+	CategoryID        uint          `json:"category_id" binding:"required" fake:"-"`
+	Category          Category      `json:"category" fake:"-"`
+	CreatedAt         time.Time     `json:"created_at" gorm:"autoCreateTime" fake:"-"`
+	UpdatedAt         time.Time     `json:"updated_at" gorm:"autoUpdateTime" fake:"-"`
+	OrderDetails      []OrderDetail `json:"order_details" gorm:"foreignKey:ProductID" fake:"-"`
+	Reviews           []Review      `json:"reviews" gorm:"foreignKey:ProductID" fake:"-"`
 }
