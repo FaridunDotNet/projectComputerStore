@@ -10,10 +10,6 @@ func SeedAdmins(db *gorm.DB, number int) error {
 	for i := 0; i < number; i++ {
 		var admin models.Admin
 
-		//admin.FullName = gofakeit.Name()
-		//admin.Email = gofakeit.Email()
-		//admin.Password = gofakeit.Password(true, true, true, true, false, 8)
-
 		if err := gofakeit.Struct(&admin); err != nil {
 			return err
 		}
@@ -107,7 +103,7 @@ func SeedOrdersDetails(db *gorm.DB, number int) error {
 }
 
 func SeedReview(db *gorm.DB, number int) error {
-	for i := 0; i < number; i++ {
+	for i := 0; i < 10; i++ {
 		var model models.Review
 
 		if err := gofakeit.Struct(&model); err != nil {

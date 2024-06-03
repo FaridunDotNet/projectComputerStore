@@ -79,21 +79,6 @@ func (h *Handlers) GetOneCategory(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"category": category,
 	})
-	/*if err := h.DB.First(&category, id).Error; err != nil {
-		log.Println("Error:", err)
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{
-				"massage": "Category not found",
-			})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Internal server error",
-			})
-		}
-		return
-	}
-
-	c.JSON(http.StatusOK, category)*/
 
 }
 
@@ -121,19 +106,21 @@ func (h *Handlers) UpdateCategory(c *gin.Context) {
 		helpers.FillValidationErrorTag(err, validationErrors)
 	}
 
-	// business validation
-	//select count(*) from categories where email='email' // if count == 0
-	//select * from categorys where email='email' limit 1 // if null
+	// Business validation
+	// select count(*) from categories where name='name' and id != 'id' // if count > 0
 
 	if len(validationErrors) != 0 {
 		c.JSON(http.StatusUnprocessableEntity, validationErrors)
 		return
 	}
 
+	// Update category fields with requestBody data
+	category.Name = requestBody.Name
+
 	if err := h.DB.Save(&category).Error; err != nil {
 		log.Println("cannot update category:", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error",
+			"message": "Internal Server Error",
 		})
 		return
 	}

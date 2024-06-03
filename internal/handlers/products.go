@@ -9,6 +9,14 @@ import (
 	"net/http"
 )
 
+type productResponse struct {
+	Name              string `json:"name" binding:"required" fake:"{name}"`
+	Description       string `json:"description" binding:"required" fake:"{sentence}"`
+	Price             uint   `json:"price" binding:"required" fake:"{number:1,100}"`
+	QuantityAvailable int    `json:"quantity_available" binding:"required" fake:"{number:1,100}"`
+	CategoryID        uint   `json:"category_id" binding:"required" fake:"{number: 1,10}"`
+}
+
 func (h *Handlers) GetAllProducts(c *gin.Context) {
 	products := []models.Product{}
 	if err := h.DB.Find(&products).Error; err != nil {

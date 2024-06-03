@@ -10,7 +10,7 @@ import (
 )
 
 func (h *Handlers) GetAllReviews(c *gin.Context) {
-	reviews := []models.Review{}
+	var reviews []models.Review
 	if err := h.DB.Find(&reviews).Error; err != nil {
 		log.Println("Error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -42,7 +42,7 @@ func (h *Handlers) CreateReview(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, review)
+	c.JSON(http.StatusCreated, review)
 }
 
 func (h *Handlers) GetOneReview(c *gin.Context) {
@@ -64,7 +64,6 @@ func (h *Handlers) GetOneReview(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, review)
-
 }
 
 func (h *Handlers) UpdateReview(c *gin.Context) {
@@ -102,7 +101,6 @@ func (h *Handlers) UpdateReview(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, review)
-
 }
 
 func (h *Handlers) DeleteReview(c *gin.Context) {
